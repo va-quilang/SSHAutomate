@@ -1,5 +1,5 @@
 
-<!-- Your monitor number = #$34T# -->
+<!-- Your monitor number = 91 -->
 
 ## SETUP
 Setup:  
@@ -118,7 +118,7 @@ ip -br link
 3. Modify Interface IP
 VMNet2:  192.168.102.6/24
 VMNet3:  11.11.11.100/27
-Bridged: 10.#$34T#.1.6/24
+Bridged: 10.91.1.6/24
 
 <br>
 
@@ -126,7 +126,7 @@ Bridged: 10.#$34T#.1.6/24
 !@NetOps-PH
 ifconfig ens192 192.168.102.6 netmask 255.255.255.0 up
 ifconfig ens224 11.11.11.100 netmask 255.255.255.224 up
-ifconfig ens256 10.#$34T#.1.6 netmask 255.255.255.0 up
+ifconfig ens256 10.91.1.6 netmask 255.255.255.0 up
 ~~~
 
 <br>
@@ -178,13 +178,13 @@ type ethernet \
 con-name BRIDGED \
 ifname ens256 \
 ipv4.method manual \
-ipv4.addresses 10.#$34T#.1.6/24 \
+ipv4.addresses 10.91.1.6/24 \
 autoconnect yes
 
 nmcli connection up BRIDGED
 
-ip route add 10.0.0.0/8 via 10.#$34T#.1.4 dev ens256
-ip route add 200.0.0.0/24 via 10.#$34T#.1.4 dev ens256
+ip route add 10.0.0.0/8 via 10.91.1.4 dev ens256
+ip route add 200.0.0.0/24 via 10.91.1.4 dev ens256
 ip route add 0.0.0.0/0 via 11.11.11.113 dev ens224
 ~~~
 
@@ -213,17 +213,17 @@ rm -rf /root/.ssh/known_hosts
 SSH to the ff devices:
 ~~~
 !@NetOps
-ssh admin@10.#$34T#.1.2
+ssh admin@10.91.1.2
 ~~~
 
 <br>
 
 | IP                 | Device   |
 | ---                | ---      |
-| 10.#$34T#.1.2      | CoreTaas |
-| 10.#$34T#.1.4      | CoreBaba |
-| 10.#$34T#.100.8    | CUCM     |
-| 10.#$34T#.#$34T#.1 | EDGE     |
+| 10.91.1.2      | CoreTaas |
+| 10.91.1.4      | CoreBaba |
+| 10.91.100.8    | CUCM     |
+| 10.91.91.1 | EDGE     |
 
 <br>
 
@@ -375,21 +375,21 @@ conf t
 cbaba.json
 ~~~
 {
-    "monitor_number": "#$34T#",
+    "monitor_number": "91",
     
     "device_config": {
-        "hostname": "CoreBaba-#$34T#",
+        "hostname": "CoreBaba-91",
         "address": {
             "vlan_70": {
-                "ipv4": "10.#$34T#.70.4",
+                "ipv4": "10.91.70.4",
                 "desc": "BLUETEAM"
             },
             "vlan_71": {
-                "ipv4": "10.#$34T#.71.4",
+                "ipv4": "10.91.71.4",
                 "desc": "REDTEAM"
             },
             "vlan_72": {
-                "ipv4": "10.#$34T#.72.4",
+                "ipv4": "10.91.72.4",
                 "desc": "AUDIT"
             }
         },
@@ -569,12 +569,24 @@ __NETCONF Operations__
       <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
         <interface>
           <Loopback>
-            <name>5</name>
+            <name>3</name>
             <description>Configured via raw NETCONF SSH</description>
             <ip>
               <address>
                 <primary>
-                  <address>5.5.5.5</address>
+                  <address>3.3.3.3</address>
+                  <mask>255.255.255.255</mask>
+                </primary>
+              </address>
+            </ip>
+          </Loopback>
+           <Loopback>
+            <name>4</name>
+            <description>Configured via raw NETCONF SSH</description>
+            <ip>
+              <address>
+                <primary>
+                  <address>4.4.4.4</address>
                   <mask>255.255.255.255</mask>
                 </primary>
               </address>
@@ -1094,7 +1106,7 @@ Send cisco show commands
 !@UTM-PH - python shell
 import cli
 
-cli.executep('show ip int brief)
+cli.executep('show ip int brief')
 ~~~
 
 <br>
@@ -1105,7 +1117,7 @@ Send Configurations
 import cli
 
 commands = '''
-hostname UTM-PH-#$34T#
+hostname UTM-PH-91
 '''
 
 cli.configurep(commands)
@@ -1118,12 +1130,12 @@ cli.configurep(commands)
 import cli
 
 commands = '''
-int loop 10
-ip add 10.10.10.10 255.255.255.255
+int loop 1
+ip add 1.1.1.1 255.255.255.255
+int loop 2
+ip add 2.2.2.2 255.255.255.255
 description via-python-cli
-int loop 4
-ip add 11.11.11.11 255.255.255.255
-description via-python-cli
+
 '''
 
 cli.configurep(commands)
@@ -1324,7 +1336,7 @@ list_of_device = list_of_device.split()
 ### Device Information
 device_info = {
     'device_type': 'cisco_ios_telnet',
-    'host': '10.#$34T#.1.2',
+    'host': '10.91.1.2',
     'username': 'admin',
     'password': 'pass',
     'secret': 'pass',
@@ -1421,7 +1433,7 @@ def get_configs(user_m, add_dn=''):
 def config_devices(user_m, add_dn='', terminal=False):
     device_info = {
         'device_type': 'cisco_ios_telnet',
-        'host': f'10.#$34T#.100.8',
+        'host': f'10.91.100.8',
         'username': 'admin',
         'password': 'pass',
         'secret': 'pass'
@@ -1609,7 +1621,7 @@ Error Occured: {fail}
 
 ## EEM
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 conf t
  int loop 0
   ip add 1.0.0.1 255.255.255.255
@@ -1623,7 +1635,7 @@ conf t
 Duplicate Session, Terminal Monitoring
 
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 config t
 no event manager applet WatchLo0
 event manager applet WatchLo0
@@ -1641,7 +1653,7 @@ event manager run WatchLo0
 
 ### 2. Send basic command (loop 14 & 15)
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 config t
 no event manager applet addloop
 event manager applet addloop
@@ -1668,7 +1680,7 @@ event manager run addloop
 
 ### 3. Generate Loopbacks
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 config t
 no event manager applet createloop
 event manager applet createloop
@@ -1695,7 +1707,7 @@ event manager run createloop
 
 ### 4. Delete Loopbacks
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 config t
 no event manager applet removeloop
 event manager applet removeloop
@@ -1719,7 +1731,7 @@ event manager run removeloop
 
 ### 5. How to get your boss fired
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 config t
 no event manager applet byebye
 event manager applet byebye
@@ -1772,22 +1784,22 @@ type ethernet \
 con-name BRIDGED \
 ifname ens256 \
 ipv4.method manual \
-ipv4.addresses 10.#$34T#.1.6/24 \
+ipv4.addresses 10.91.1.6/24 \
 autoconnect yes
 
 nmcli connection up BRIDGED
 
-route add 10.0.0.0/8 via 10.#$34T#.1.4
-route add 200.0.0.0/24 via 10.#$34T#.1.4
+route add 10.0.0.0/8 via 10.91.1.4
+route add 200.0.0.0/24 via 10.91.1.4
 ~~~
 
 <br>
 
 ~~~
 !@NetOps
-ifconfig ens256 10.#$34T#.1.6 netmask 255.255.255.0 up
-route add 10.0.0.0/8 via 10.#$34T#.1.4
-route add 200.0.0.0/24 via 10.#$34T#.1.4
+ifconfig ens256 10.91.1.6 netmask 255.255.255.0 up
+route add 10.0.0.0/8 via 10.91.1.4
+route add 200.0.0.0/24 via 10.91.1.4
 ~~~
 
 &nbsp;
@@ -1946,8 +1958,8 @@ __Playbook (add_loop.yml)__
 __hosts (Inventory)__
 ~~~
 [realdevices]
-ctaas ansible_host=10.#$34T#.1.2 ansible_user=admin ansible_password=pass
-cbaba ansible_host=10.#$34T#.1.4 ansible_user=rivan ansible_password=C1sc0123
+ctaas ansible_host=10.91.1.2 ansible_user=admin ansible_password=pass
+cbaba ansible_host=10.91.1.4 ansible_user=rivan ansible_password=C1sc0123
 
 [realdevices:vars]
 ansible_connection=network_cli
@@ -2032,10 +2044,10 @@ nano real_devices.ini
 
 ~~~
 [real_cisco]
-CTAAS ansible_host=10.#$34T#.1.2
-CBABA ansible_host=10.#$34T#.1.4
-CUCM ansible_host=10.#$34T#.100.8
-EDGE ansible_host=10.#$34T#.#$34T#.1
+CTAAS ansible_host=10.91.1.2
+CBABA ansible_host=10.91.1.4
+CUCM ansible_host=10.91.100.8
+EDGE ansible_host=10.91.91.1
 UTM-PH ansible_host=11.11.11.113
 
 [real_cisco:vars]
@@ -2149,12 +2161,12 @@ nano group_vars/real_cisco.yml
 interfaces:
   - name: Loopback1
     desc: Made via Ansible
-    ip: #$34T#.0.1.1
+    ip: 91.0.1.1
     mask: 255.255.255.255
 
   - name: Loopback2
     desc: Made via Ansible
-    ip: #$34T#.0.2.1
+    ip: 91.0.2.1
     mask: 255.255.255.255
 ~~~
 
@@ -2173,12 +2185,12 @@ nano host_vars/CBABA.yml
 interfaces:
   - name: Loopback1
     desc: Made via Ansible
-    ip: #$34T#.0.1.4
+    ip: 91.0.1.4
     mask: 255.255.255.255
 
   - name: Loopback2
     desc: Made via Ansible
-    ip: #$34T#.0.2.4
+    ip: 91.0.2.4
     mask: 255.255.255.255
 ~~~
 
@@ -2196,12 +2208,12 @@ nano host_vars/CTAAS.yml
 interfaces:
   - name: Loopback1
     desc: Made via Ansible
-    ip: #$34T#.0.1.2
+    ip: 91.0.1.2
     mask: 255.255.255.255
 
   - name: Loopback2
     desc: Made via Ansible
-    ip: #$34T#.0.2.2
+    ip: 91.0.2.2
     mask: 255.255.255.255
 ~~~
 
@@ -2296,7 +2308,7 @@ ansible_project/playbooks/deploy_dhcp.yml
 Enable RESTCONF
 
 ~~~
-!@UTM-PH-#$34T#
+!@UTM-PH-91
 conf t
  username admin privilege 15 secret pass
  ip http secure-server
@@ -2334,7 +2346,7 @@ resource "iosxe_interface_loopback" "example" {
   name               = 3
   description        = "My First TF Script Attempt"
   shutdown           = false
-  ipv4_address       = "#$34T#.0.3.1"
+  ipv4_address       = "91.0.3.1"
   ipv4_address_mask  = "255.255.255.255"
 }
 ~~~
@@ -2404,7 +2416,7 @@ type cisco_ios_interfaceurl file:////etc/puppetlabs/puppet/devices/rivan.com.con
 
 __Credentials__
 ~~~
-host: "10.#$34T#.1.4"
+host: "10.91.1.4"
 port: 22
 user: admin
 password: password
